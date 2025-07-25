@@ -1,5 +1,5 @@
 trigger:
-- main
+- main  # ou seu branch
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -9,14 +9,20 @@ variables:
   TOPIC_NAME: 'topico-teste'
 
 steps:
-- task: GCPAuthenticate@0
-  inputs:
-    serviceEndpoint: 'gcp-service-connection' 
-
 - script: |
-    echo "Ativando o projeto $GCLOUD_PROJECT_ID"
+    echo "Escrevendo chave JSON em arquivo..."
+    echo "$(GCP_SA_KEY_JSON)" > gcloud-key.json
+
+    echo "Instalando Google Cloud SDK..."
+    curl https://sdk.cloud.google.com | bash > install.log
+    source $HOME/google-cloud-sdk/path.bash.inc
+
+    echo "Autenticando com a conta de serviço..."
+    gcloud auth activate-service-account --key-file=gcloud-key.json
     gcloud config set project $GCLOUD_PROJECT_ID
 
-    echo "Criando tópico no Pub/Sub: $TOPIC_NAME"
+    echo "Criando tópico no Pub/Sub..."
     gcloud pubsub topics create $TOPIC_NAME
-  displayName: 'Executar comandos gcloud'
+  displayName: 'Executar gcloud'
+  env:
+    GCP_SA_KEY_JSON: $(GCP_SA_KEY_JSON)
