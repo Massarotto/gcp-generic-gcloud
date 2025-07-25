@@ -1,0 +1,22 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  GCLOUD_PROJECT_ID: 'study-464117'
+  TOPIC_NAME: 'topico-teste'
+
+steps:
+- task: GCPAuthenticate@0
+  inputs:
+    serviceEndpoint: 'gcp-service-connection' 
+
+- script: |
+    echo "Ativando o projeto $GCLOUD_PROJECT_ID"
+    gcloud config set project $GCLOUD_PROJECT_ID
+
+    echo "Criando tópico no Pub/Sub: $TOPIC_NAME"
+    gcloud pubsub topics create $TOPIC_NAME
+  displayName: 'Executar comandos gcloud'
