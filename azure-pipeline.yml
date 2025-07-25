@@ -2,7 +2,7 @@ trigger:
 - main  # ou seu branch
 
 pool:
-  vmImage: 'ubuntu-latest'
+  name: 'self-hosted-pool'
 
 variables:
   GCLOUD_PROJECT_ID: 'study-464117'
